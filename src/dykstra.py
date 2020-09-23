@@ -3,16 +3,11 @@ import heapq
 
 
 def dijkstra(nodes, start):
-    """
-    :param {[Node]} nodes:
-    :param {Node} start:
-    :return:
-    """
     fixed = {}
     nearest = [(0, start, start)]
     heapq.heapify(nearest)
 
-    while len(nearest) != 0:
+    while nearest:
         dist, node, prev = heapq.heappop(nearest)
         if node not in fixed:
             fixed[node] = (dist, prev)
