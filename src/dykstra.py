@@ -2,7 +2,7 @@ from .model import Node
 import heapq
 
 
-def dijkstra(nodes, start):
+def dijkstra(start):
     fixed = {}
     nearest = [(0, start, start)]
     heapq.heapify(nearest)

@@ -33,25 +33,44 @@ def link(a, b, dist):
 
 
 class Link:
+    start = True
+    end = False
 
     def __init__(self, name, length):
         self.name = name
         self._length = length
 
         self._connects = {
-            True: {},  # starts { ln: start_of_ln }
-            False: {},  # ends { ln: start_of_ln }
+            self.start: {},  # starts { ln: start_of_ln }
+            self.end: {},  # ends { ln: start_of_ln }
         }
-        self._direction = None  # True if start => end
-        self._dist = 100000
+        self._dist = {
+            self.start: 10000,
+            self.end: 10000,
+        }
+        self._prev = None
 
-    def connect(self, start, ln , start_of_ln):
-        self._connects[start][ln] = start_of_ln
+    def connects(self, start, connects):
+        self._connects[start] = connects
 
     def walk_to(self, prev, dist, start):
-        if self._dist > dist:
-            for ln, st in self._connects[not start].items():
-                if ln is not prev:
-                    ln.walk_to(ln, dist + self._length, st)
+        self._dist[start] = dist
+
+        if self._dist[not start] <= dist + self._length:
+            self._prev = None
+            return
+
+        self._prev = (prev, start)
+        self._dist[not start] = dist + self._length
+
+        for ln, st in self._connects[not start].items():
+            ln.walk_to(self, dist + self._length, st)
+
+    def __repr__(self):
+        return f'{self.name}: {self._dist[self.start]} {self._dist[self.end]}, prev={self._prev}'
 
 
+def connect(links):
+    for ln, start in links.items():
+        ls = {k: v for k, v in links.items() if k is not ln}
+        ln.connects(start, ls)
